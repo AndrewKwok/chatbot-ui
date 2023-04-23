@@ -40,6 +40,7 @@ import HomeContext from './home.context';
 import { HomeInitialState, initialState } from './home.state';
 
 import { v4 as uuidv4 } from 'uuid';
+import withAuth from '../../../utils/app/withAuth';
 
 interface Props {
   serverSideApiKeyIsSet: boolean;
@@ -393,7 +394,7 @@ const Home = ({
     </HomeContext.Provider>
   );
 };
-export default Home;
+export default withAuth(Home);
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
   const defaultModelId =

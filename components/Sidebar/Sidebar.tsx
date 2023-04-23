@@ -8,6 +8,7 @@ import {
 } from './components/OpenCloseButton';
 
 import Search from '../Search';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 interface Props<T> {
   isOpen: boolean;
@@ -54,11 +55,41 @@ const Sidebar = <T,>({
     e.target.style.background = 'none';
   };
 
+  const UserProfile: React.FC = () => {
+    const { user } = useUser();
+
+    if (!user) {
+      return null;
+    }
+
+    const defaultPicture = 'https://via.placeholder.com/150'; // Fallback URL for the profile picture
+
+    return (
+      <div className="flex items-center justify-center text-white">
+        <div className="mr-2">{user.name}</div>
+        <img
+          className="w-8 h-8 rounded-full border-2 border-white"
+          src={user.picture || defaultPicture}
+          alt={user.name || ''}
+        />
+      </div>
+    );
+  };
+
+
+
+
   return isOpen ? (
     <div>
       <div
         className={`fixed top-0 ${side}-0 z-40 flex h-full w-[260px] flex-none flex-col space-y-2 bg-[#202123] p-2 text-[14px] transition-all sm:relative sm:top-0`}
       >
+        {/* Add the UserProfile component here */}
+        <div className="mb-4">
+          <UserProfile />
+        </div>
+        {/* ...the rest of your sidebar content */}
+
         <div className="flex items-center">
           <button
             className="text-sidebar flex w-[190px] flex-shrink-0 cursor-pointer select-none items-center gap-3 rounded-md border border-white/20 p-3 text-white transition-colors duration-200 hover:bg-gray-500/10"
