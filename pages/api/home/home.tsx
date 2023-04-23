@@ -292,61 +292,121 @@ const Home = ({
     if (showPromptbar) {
       dispatch({ field: 'showPromptbar', value: showPromptbar === 'true' });
     }
-
-    const folders = localStorage.getItem('folders');
-    if (folders) {
-      dispatch({ field: 'folders', value: JSON.parse(folders) });
-    }
-
-    const prompts = localStorage.getItem('prompts');
-    if (prompts) {
-      dispatch({ field: 'prompts', value: JSON.parse(prompts) });
-    }
-
-    const conversationHistory = localStorage.getItem('conversationHistory');
-    if (conversationHistory) {
-      const parsedConversationHistory: Conversation[] =
-        JSON.parse(conversationHistory);
-      const cleanedConversationHistory = cleanConversationHistory(
-        parsedConversationHistory,
-      );
-
-      dispatch({ field: 'conversations', value: cleanedConversationHistory });
-    }
-
-    const selectedConversation = localStorage.getItem('selectedConversation');
-    if (selectedConversation) {
-      const parsedSelectedConversation: Conversation =
-        JSON.parse(selectedConversation);
-      const cleanedSelectedConversation = cleanSelectedConversation(
-        parsedSelectedConversation,
-      );
-
-      dispatch({
-        field: 'selectedConversation',
-        value: cleanedSelectedConversation,
-      });
-    } else {
-      const lastConversation = conversations[conversations.length - 1];
-      dispatch({
-        field: 'selectedConversation',
-        value: {
-          id: uuidv4(),
-          name: t('New Conversation'),
-          messages: [],
-          model: OpenAIModels[defaultModelId],
-          prompt: DEFAULT_SYSTEM_PROMPT,
-          temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
-          folderId: null,
-        },
-      });
-    }
+    //
+    // const folders = localStorage.getItem('folders');
+    // if (folders) {
+    //   dispatch({ field: 'folders', value: JSON.parse(folders) });
+    // }
+    //
+    // const prompts = localStorage.getItem('prompts');
+    // if (prompts) {
+    //   dispatch({ field: 'prompts', value: JSON.parse(prompts) });
+    // }
+    //
+    // const conversationHistory = localStorage.getItem('conversationHistory');
+    // if (conversationHistory) {
+    //   const parsedConversationHistory: Conversation[] =
+    //     JSON.parse(conversationHistory);
+    //   const cleanedConversationHistory = cleanConversationHistory(
+    //     parsedConversationHistory,
+    //   );
+    //
+    //   dispatch({ field: 'conversations', value: cleanedConversationHistory });
+    // }
+    //
+    // const selectedConversation = localStorage.getItem('selectedConversation');
+    // if (selectedConversation) {
+    //   const parsedSelectedConversation: Conversation =
+    //     JSON.parse(selectedConversation);
+    //   const cleanedSelectedConversation = cleanSelectedConversation(
+    //     parsedSelectedConversation,
+    //   );
+    //
+    //   dispatch({
+    //     field: 'selectedConversation',
+    //     value: cleanedSelectedConversation,
+    //   });
+    // } else {
+    //   const lastConversation = conversations[conversations.length - 1];
+    //   dispatch({
+    //     field: 'selectedConversation',
+    //     value: {
+    //       id: uuidv4(),
+    //       name: t('New Conversation'),
+    //       messages: [],
+    //       model: OpenAIModels[defaultModelId],
+    //       prompt: DEFAULT_SYSTEM_PROMPT,
+    //       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
+    //       folderId: null,
+    //     },
+    //   });
+    // }
   }, [
     defaultModelId,
     dispatch,
     serverSideApiKeyIsSet,
     serverSidePluginKeysSet,
   ]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch('/api/mongodb/fetchUserData');
+        const data = await res.json();
+
+        if (data.folders) {
+          dispatch({ field: 'folders', value: data.folders });
+        }
+
+        if (data.prompts) {
+          dispatch({ field: 'prompts', value: data.prompts });
+        }
+
+        if (data.conversations) {
+          const cleanedConversationHistory = cleanConversationHistory(
+            data.conversations
+          );
+
+          dispatch({ field: 'conversations', value: cleanedConversationHistory });
+        }
+
+        if (data.selectedConversation) {
+          const cleanedSelectedConversation = cleanSelectedConversation(
+            data.selectedConversation
+          );
+
+          dispatch({
+            field: 'selectedConversation',
+            value: cleanedSelectedConversation,
+          });
+        } else {
+          const lastConversation = conversations[conversations.length - 1];
+          dispatch({
+            field: 'selectedConversation',
+            value: {
+              id: uuidv4(),
+              name: t('New Conversation'),
+              messages: [],
+              model: OpenAIModels[defaultModelId],
+              prompt: DEFAULT_SYSTEM_PROMPT,
+              temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
+              folderId: null,
+            },
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchData();
+  }, [
+    defaultModelId,
+    dispatch,
+    serverSideApiKeyIsSet,
+    serverSidePluginKeysSet,
+  ]);
+
 
   return (
     <HomeContext.Provider
