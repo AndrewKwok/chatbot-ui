@@ -86,6 +86,7 @@ export const ChatMessage: FC<Props> = memo(({ message, messageIndex, onEdit }) =
       messages,
     };
 
+    // @ts-ignore
     const { single, all } = updateConversation(
       updatedConversation,
       conversations,
