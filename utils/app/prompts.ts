@@ -17,6 +17,26 @@ export const updatePrompt = (updatedPrompt: Prompt, allPrompts: Prompt[]) => {
   };
 };
 
-export const savePrompts = (prompts: Prompt[]) => {
-  localStorage.setItem('prompts', JSON.stringify(prompts));
+// export const savePrompts = (prompts: Prompt[]) => {
+//   localStorage.setItem('prompts', JSON.stringify(prompts));
+// };
+
+
+
+export const savePrompts = async (prompts: Prompt[]) => {
+  try {
+    const response = await fetch('/api/mongodb/savePrompts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompts }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save folders');
+    }
+  } catch (error) {
+    console.error('Error saving folders:', error);
+  }
 };

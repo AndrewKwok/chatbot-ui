@@ -98,6 +98,10 @@ export const Chatbar = () => {
     exportData();
   };
 
+  const handleLogout = () => {
+    window.location.href = "/api/auth/logout";
+  };
+
   const handleImportConversations = (data: SupportedExportFormats) => {
     const { history, folders, prompts }: LatestExportFormat = importData(data);
     homeDispatch({ field: 'conversations', value: history });
@@ -214,6 +218,7 @@ export const Chatbar = () => {
         handleClearConversations,
         handleImportConversations,
         handleExportData,
+        handleLogout,
         handlePluginKeyChange,
         handleClearPluginKey,
         handleApiKeyChange,
