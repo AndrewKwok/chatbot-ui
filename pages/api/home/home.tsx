@@ -217,6 +217,7 @@ const Home = ({
       [data.key]: data.value,
     };
 
+    // @ts-ignore
     const { single, all } = updateConversation(
       updatedConversation,
       conversations,
